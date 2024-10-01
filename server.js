@@ -3,10 +3,12 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config(); 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const PORT = 5000 || process.env.PORT ; 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+
 
 app.post('/create-checkout-session', async (req, res) => {
     const { amount } = req.body;
@@ -23,7 +25,7 @@ app.post('/create-checkout-session', async (req, res) => {
                     price_data: {
                         currency: 'usd',
                         product_data: {
-                            name: 'Powdur',
+                            name: 'E-mart porducx',
                         },
                         unit_amount: amount,
                     },
@@ -42,7 +44,6 @@ app.post('/create-checkout-session', async (req, res) => {
     }
 });
 
-const PORT = 5000; 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

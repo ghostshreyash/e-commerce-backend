@@ -1,35 +1,30 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-require('dotenv').config(); // Load environment variables
+require('dotenv').config(); 
 
-// Ensure that Stripe secret key is defined
 if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error('STRIPE_SECRET_KEY is not defined in the environment variables');
 }
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Initialize Stripe
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); 
 const app = express();
 
-// CORS configuration - Only allow your frontend domain
 app.use(cors({
-    origin: 'https://e-mart-shopping.netlify.app', // Replace with your frontend URL
-    methods: ['POST'], // Allow only POST requests
+    origin: 'https://e-mart-shopping.netlify.app', 
+    methods: ['POST'], 
 }));
 
-app.use(bodyParser.json()); // Parse JSON request body
+app.use(bodyParser.json()); 
 
-// Create checkout session endpoint
 app.post('/create-checkout-session', async (req, res) => {
     const { amount } = req.body;
 
     try {
-        // Validate amount
         if (!amount || amount <= 0) {
             return res.status(400).json({ error: 'Invalid amount' });
         }
 
-        // Create a checkout session using Stripe API
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [
@@ -37,19 +32,18 @@ app.post('/create-checkout-session', async (req, res) => {
                     price_data: {
                         currency: 'usd',
                         product_data: {
-                            name: 'Powdur', // Example product name
+                            name: 'Powdur', 
                         },
-                        unit_amount: amount, // Amount in cents
+                        unit_amount: amount, 
                     },
                     quantity: 1,
                 },
             ],
             mode: 'payment',
-            success_url: 'https://e-mart-shopping.netlify.app/success', // Redirect on success
-            cancel_url: 'https://e-mart-shopping.netlify.app/cancel', // Redirect on cancel
+            success_url: 'https://e-mart-shopping.netlify.app/success', 
+            cancel_url: 'https://e-mart-shopping.netlify.app/cancel', 
         });
 
-        // Respond with session ID for the frontend to use
         res.json({ id: session.id });
     } catch (error) {
         console.error('Error creating checkout session:', error.message);
@@ -57,8 +51,7 @@ app.post('/create-checkout-session', async (req, res) => {
     }
 });
 
-// Server setup - Define PORT
-const PORT = process.env.PORT || 5000; // Use environment port if available
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

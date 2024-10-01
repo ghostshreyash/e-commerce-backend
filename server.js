@@ -11,9 +11,11 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const app = express();
 
 app.use(cors({
-    origin: 'https://e-mart-backend.netlify.app/create-checkout-session', 
-    methods: ['POST'], 
+    origin: 'https://e-mart-shopping.netlify.app', // Allow only your frontend domain
+    methods: ['GET', 'POST'],
+    credentials: true,
 }));
+
 
 app.use(bodyParser.json()); 
 
